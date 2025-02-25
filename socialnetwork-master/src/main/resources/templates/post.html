@@ -1,0 +1,32 @@
+<!-- Head-->
+<head th:replace="~{layout :: head}">...</head>
+
+<!-- Navbar -->
+<div th:replace="~{layout :: navbar}"></div>
+
+<!-- Bootstrap layout -->
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-3">
+
+            <!-- User information -->
+            <div th:replace="~{layout :: userinfo}"></div>
+
+            <div th:if="${sessionUser.getUsername() != post.getUser().getUsername()}">
+                <a th:href="@{/{username}(username=${post.getUser().getUsername()})}">
+                    <button class="btn btn-primary m-3" type="submit" value="View profile">View profile</button>
+                </a>
+            </div>
+
+        </div>
+        <!-- Bootstrap layout -->
+        <div class="col-md-9">
+            <div class="card mb-3">
+
+                <div th:replace="~{layout :: post}"></div>
+
+            </div>
+        </div>
+    </div> <!-- I added a closing tag because the IDE told me to (?) -->
+    </body>
+    </html>
