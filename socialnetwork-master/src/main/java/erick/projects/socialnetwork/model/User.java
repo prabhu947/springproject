@@ -156,3 +156,59 @@ public class User {
         this.profileImage = profileImage;
     }
 }
+"""package erick.projects.socialnetwork.controller;
+
+import erick.projects.socialnetwork.model.User;
+import erick.projects.socialnetwork.repository.UserRepository;
+import org.springframework.web.bind.annotation.*;
+
+
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/password")
+public class ResetPasswordController {
+
+    private final UserRepository userRepository;
+    private final Map<String, String> resetTokens = new HashMap<>();
+
+    public ResetPasswordController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    // 1. Request Password Reset (Generates a token)
+    @PostMapping("/request-reset")
+    public String requestReset(@RequestParam String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            return "User not found";
+        }
+        String token = UUID.randomUUID().toString();
+        resetTokens.put(token, email);
+        System.out.println("Reset Token for " + email + ": " + token);
+        return "Reset token generated. Check console.";
+    }
+
+    // 2. Reset Password using Token
+    @PostMapping("/reset")
+    public String resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+        if (!resetTokens.containsKey(token)) {
+            return "Invalid token";
+        }
+        String email = resetTokens.get(token);
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            return "User not found";
+        }
+
+        User existingUser = user.get();
+        existingUser.setPassword(newPassword); // In real cases, hash this password
+        userRepository.save(existingUser);
+        resetTokens.remove(token);
+        return "Password reset successful for " + email;
+    }
+}"""
